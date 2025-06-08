@@ -1,8 +1,5 @@
 ﻿using ILGPU;
-using ILGPU.IR;
 using ILGPU.Runtime;
-using System.Runtime.InteropServices.Marshalling;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace B3Search
 {
@@ -14,12 +11,18 @@ namespace B3Search
         /// <summary>
         /// Returns 1 if <paramref name="this"/> is less than <paramref name="other"/>, otherwise 0. Branchless.
         /// </summary>
+        /// <param name="this">The first unsigned integer to compare.</param>
+        /// <param name="other">The second unsigned integer to compare.</param>
+        /// <returns>1 if <paramref name="this"/> is less than <paramref name="other"/>, otherwise 0.</returns>
         public static int IsLessThan(uint @this, uint other)
             => (int)((@this - other) >> 31);
 
         /// <summary>
         /// Returns the smaller of two signed integers, branchless.
         /// </summary>
+        /// <param name="a">The first signed integer.</param>
+        /// <param name="b">The second signed integer.</param>
+        /// <returns>The smaller of the two integers.</returns>
         public static int Min(int a, int b)
         {
             // diff's MSB is 1 if a < b (underflow)
@@ -30,6 +33,12 @@ namespace B3Search
             return (a & mask) | (b & ~mask);
         }
 
+        /// <summary>
+        /// Returns the smaller of two signed long integers, branchless.
+        /// </summary>
+        /// <param name="a">The first signed long integer.</param>
+        /// <param name="b">The second signed long integer.</param>
+        /// <returns>The smaller of the two long integers.</returns>
         public static long Min(long a, long b)
         {
             // diff's MSB is 1 if a < b (underflow)
@@ -44,6 +53,10 @@ namespace B3Search
         /// Branchless binary search: finds the first index where array[index] >= value.
         /// Returns last index if not found.
         /// </summary>
+        /// <param name="array">The array to search.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <param name="iteration">The number of iterations to perform.</param>
+        /// <returns>The first index where array[index] >= value, or lastIndex if not found.</returns>
         public static int Search(uint[] array, uint value, byte iteration)
         {
             int begin = 0; // Start of the search range
@@ -69,6 +82,14 @@ namespace B3Search
             return Min(begin, lastIndex);
         }
 
+        /// <summary>
+        /// Branchless binary search: finds the first index where array[index] >= value.
+        /// Returns last index if not found.
+        /// <summary>
+        /// <param name="array">The array to search.</param>
+        /// <param name="value">The value to search for.</param>
+        /// <param name="iteration">The number of iterations to perform.</param>
+        /// <returns>The first index where array[index] >= value, or lastIndex if not found.</returns>
         public static int Search(uint[] array, uint value)
         {
             if (array.Length == 0)
@@ -124,6 +145,15 @@ namespace B3Search
             indices[idx] = IntrinsicMath.Min(b, lastIndex);
         }
 
+        /// <summary>
+        /// Branchless binary search: finds the first index where array[index] >= value.
+        /// Returns last index if not found.
+        /// </summary>
+        /// <param name="accelerator">The ILGPU accelerator to use for the search.</param>
+        /// <param name="array">The sorted array to search.</param>
+        /// <param name="values">The values to search for in the array.</param>
+        /// <param name="internalTicks">Output parameter to capture the internal execution time in ticks.</param>
+        /// <returns>An array of indices where each index corresponds to the first position in the array where the value is greater than or equal to the searched value.</returns>
         public static int[] GpuSearch(this Accelerator accelerator, uint[] array, uint[] values, out long internalTicks)
         {
             if (array.Length == 0 || values.Length == 0)
