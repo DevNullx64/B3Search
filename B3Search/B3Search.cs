@@ -22,10 +22,6 @@ namespace B3Search
         /// <summary>
         /// Returns the smaller of two signed integers, branchless.
         /// </summary>
-        /// <param name="a">The first signed integer.</param>
-        /// <param name="b">The second signed integer.</param>
-        /// <returns>The smaller of the two integers.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int Min(int a, int b)
         {
             // diff's MSB is 1 if a < b (underflow)
@@ -36,13 +32,6 @@ namespace B3Search
             return (a & mask) | (b & ~mask);
         }
 
-        /// <summary>
-        /// Returns the smaller of two signed long integers, branchless.
-        /// </summary>
-        /// <param name="a">The first signed long integer.</param>
-        /// <param name="b">The second signed long integer.</param>
-        /// <returns>The smaller of the two long integers.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long Min(long a, long b)
         {
             // diff's MSB is 1 if a < b (underflow)
